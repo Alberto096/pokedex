@@ -10,11 +10,9 @@ import { Display4 } from 'baseui/typography';
 
 import axios from 'axios';
 import { ApiUrl } from '../../constants/constants';
-import { Button } from 'baseui/button';
+import { Button, SHAPE } from 'baseui/button';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'baseui/icon';
-import { Tag, VARIANT, SIZE } from "baseui/tag";
-import { ButtonGroup, SHAPE } from "baseui/button-group";
 // import { ArrowLeft, ArrowRight } from 'baseui/icon';
 
 type PokemonProps = {
@@ -27,6 +25,7 @@ const PokemonId: React.FC<PokemonProps> = ({ match }: PokemonProps) => {
     const [next, setNext] = useState(0);
     const [previous, setPrevious] = useState(0);
     const [name, setName] = useState('')
+    const [imgSprites, setImgSprites] = useState('')
     const [abilities, setAbilities] = useState([]);
     const [game_indices, setGame_indices] = useState([]);
     const [sprites, setSprites] = useState([]);
@@ -36,6 +35,7 @@ const PokemonId: React.FC<PokemonProps> = ({ match }: PokemonProps) => {
 
 
     const ResultExtrac = (data: any) => {
+        console.log(data)
         setNext(data?.id + 1)
         setPrevious(data?.id + 2)
         setName(data?.name)
@@ -43,11 +43,33 @@ const PokemonId: React.FC<PokemonProps> = ({ match }: PokemonProps) => {
         setGame_indices(data?.game_indices)
         setSprites(data?.sprites?.versions)
         setTypes(data?.types)
-        setMoves(data?.moves)
+        movesTablet(data?.moves)
+        setImgSprites(data?.sprites?.front_default)
+    }
+
+    const movesTablet = (moves: any) =>{
+        console.log(moves)
+        const dataMovimientos: any = moves.map((move : any) => {
+            const name: string = move?.move?.name
+            const listMoves: any = move?.version_group_details.map((infomove: any) => {
+                const move_learn_method: string = infomove?.move_learn_method?.name
+                const version_group: string = infomove?.version_group?.name
+                return [
+                    move_learn_method,
+                    version_group
+                ]
+            })
+            .map((r: any) => ({ id: String(r[0]), data: r }));
+            return[
+                name,
+                listMoves
+            ]
+        })
+        .map((r: any) => ({ id: String(r[0]), data: r }));
+        setMoves(dataMovimientos)
     }
 
     useEffect(() => {
-        console.log(apisUrl)
         axios.get(apisUrl)
             .then((response) => {
                 ResultExtrac(response?.data)
@@ -119,21 +141,10 @@ const PokemonId: React.FC<PokemonProps> = ({ match }: PokemonProps) => {
                                     textAlign: 'center',
                                 })}
                             >
-                                {/*
-                                {console.log(types)}
-                                {console.log(types)} */}
-                                {/* <div>
-                                    {sprites.map((index: any) => {
-                                        console.log(index)
-                                        return(
-                                            <img src="img_girl.jpg" alt="Girl in a jacket" width="500" height="600" />
-                                        )
-                                    })}
-                                </div> */}
                                 <div>
                                     {game_indices.map((index: any) => {
                                         return (
-                                            <Button key={index?.version?.name} shape={SHAPE.pill}>{index?.version?.name}</Button>
+                                            <Button key={index?.version?.name}>{index?.version?.name}</Button>
                                         )
                                     })}
                                 </div>
@@ -150,42 +161,47 @@ const PokemonId: React.FC<PokemonProps> = ({ match }: PokemonProps) => {
                                 })}
                             >
                                 <div>
-                                    {types.map((index: any) => {
-                                        return (
-                                            <Link
-                                                key={index?.slot}
-                                                to={`${'/'}`}
-                                                className={css({ textDecoration: 'none', color: '#000' })}
-                                            >
-                                                <Tag
-                                                    closeable={false}
-                                                    variant={VARIANT.solid}
-                                                    size={SIZE.medium}
-                                                >
-                                                    {index?.type?.name}
-                                                </Tag>
-                                            </Link>
-                                        )
-                                    })}
+                                    <img className="imgSprites" src={imgSprites} alt={name} width={'100%'} />
+                                    <div className={css({ margin: '4px 0 4px 0' })}>
+                                        <div className={css({ textAlign: 'left' })}>
+                                            Tipos
+                                        </div>
+                                        <div className={css({ textAlign: 'right' })}>
+                                            {types.map((index: any) => {
+                                                return (
+                                                    <Link
+                                                        key={index?.slot}
+                                                        to={`${'/'}`}
+                                                        className={css({ textDecoration: 'none', color: '#000' })}
+                                                    >
+                                                        <Button>
+                                                            {index?.type?.name}
+                                                        </Button>
+                                                    </Link>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    {abilities.map((index: any) => {
-                                        return (
-                                            <Link
-                                                key={index?.slot}
-                                                to={`${'/'}`}
-                                                className={css({ textDecoration: 'none', color: '#000' })}
-                                            >
-                                                <Tag
-                                                    closeable={false}
-                                                    variant={VARIANT.solid}
-                                                    size={SIZE.medium}
+                                <div className={css({ margin: '4px 0 4px 0' })}>
+                                    <div className={css({ textAlign: 'left' })}>
+                                        Habilidades
+                                    </div>
+                                    <div className={css({ textAlign: 'right' })}>
+                                        {abilities.map((index: any) => {
+                                            return (
+                                                <Link
+                                                    key={index?.slot}
+                                                    to={`${'/'}`}
+                                                    className={css({ textDecoration: 'none', color: '#000' })}
                                                 >
-                                                    {index?.ability?.name}
-                                                </Tag>
-                                            </Link>
-                                        )
-                                    })}
+                                                    <Button>
+                                                        {index?.ability?.name}
+                                                    </Button>
+                                                </Link>
+                                            )
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         </Cell>

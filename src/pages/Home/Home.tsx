@@ -21,6 +21,7 @@ const Home: React.FC = () => {
     const [apisUrl, serApisUrl] = useState(ApiUrl + 'pokemon/?offset=0&limit=20')
 
     const ResultExtrac = (data: any) => {
+        console.log(data)
         setNext(data?.next);
         setPrevious(data?.previous)
         setResults(data?.results)
