@@ -54,9 +54,11 @@ const PokemonId: React.FC<PokemonProps> = ({ match }: PokemonProps) => {
             const listMoves: any = move?.version_group_details.map((infomove: any) => {
                 const move_learn_method: string = infomove?.move_learn_method?.name
                 const version_group: string = infomove?.version_group?.name
+                const level_to_learn: string =  infomove
                 return [
                     move_learn_method,
-                    version_group
+                    version_group, 
+                    level_to_learn
                 ]
             })
             .map((r: any) => ({ id: String(r[0]), data: r }));
@@ -66,6 +68,7 @@ const PokemonId: React.FC<PokemonProps> = ({ match }: PokemonProps) => {
             ]
         })
         .map((r: any) => ({ id: String(r[0]), data: r }));
+        console.log(dataMovimientos)
         setMoves(dataMovimientos)
     }
 
